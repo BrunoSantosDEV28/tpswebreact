@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Routes, Route, Link, Navigate } from "react-router-dom";
 import Home from "./views/Home";
 import SignIn from "./views/SignIn";
@@ -12,6 +12,7 @@ import CustomBox from "./components/Box";
 import CustomCard from "./components/Card";
 import CustomCheckbox from "./components/Checkbox";
 import CustomContainer from "./components/Container";
+
 import FabButton from "./FabButton";
 import GridComponent from "./GridComponent";
 import IconButtonComponent from "./IconButtonComponent";
@@ -29,6 +30,7 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 const App = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [alertOpen, setAlertOpen] = useState<boolean>(true);
 
   const handleCloseAlert = (event?: React.SyntheticEvent, reason?: string) => {
@@ -38,9 +40,13 @@ const App = () => {
     setAlertOpen(false);
   };
 
+  useEffect(() => {
+    const authStatus = localStorage.getItem("isAuthenticated");
+    setIsAuthenticated(authStatus === "true");
+  }, []);
+
   return (
     <div>
-      {}
       <nav>
         <ul style={{ display: "flex", listStyleType: "none" }}>
           <li style={{ margin: "0 10px" }}>
@@ -63,6 +69,7 @@ const App = () => {
           </li>
         </ul>
       </nav>
+      HEAD
       {}
       <CustomAvatar />
       <CustomAlert
@@ -73,6 +80,16 @@ const App = () => {
       />
       <CustomBox />
       <CustomCard />
+      <CustomAvatar /> {}
+      <CustomAlert
+        message="Este é um alerta de sucesso!"
+        severity="success"
+        open={alertOpen}
+        onClose={handleCloseAlert}
+      />
+      <CustomBox /> {}
+      <CustomCard /> {}
+      {}
       <CustomContainer>
         <h2>Conteúdo dentro do Container</h2>
         <p>Este conteúdo está dentro do componente Container.</p>
@@ -87,10 +104,13 @@ const App = () => {
       <TextFieldComponent /> {}
       <TypographyComponent /> {}
       {/* Rotas */}
+      {}
+      <CustomCheckbox /> {}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
+        193f47aef95f1b179d5ae4ec8e1859382790d7ed
         <Route
           path="/dashboard"
           element={
