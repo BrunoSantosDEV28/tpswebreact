@@ -9,16 +9,17 @@
   ],
   "main": "src/index.tsx",
   "dependencies": {
+    "@emotion/react": "^11.13.5",
+    "@emotion/styled": "^11.13.5",
+    "@mui/material": "^6.1.10",
+    "@mui/x-date-pickers": "^7.23.1",
+    "@vitejs/plugin-react": "4.3.4",
     "loader-utils": "3.2.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-scripts": "5.0.1",
-    "sass": "1.82.0",
-    "@vitejs/plugin-react": "4.3.4",
     "react-router-dom": "7.0.2",
-    "@mui/material": "6.1.10",
-    "@emotion/react": "11.13.5",
-    "@emotion/styled": "11.13.5"
+    "react-scripts": "5.0.1",
+    "sass": "1.82.0"
   },
   "devDependencies": {
     "@types/react": "18.2.38",
