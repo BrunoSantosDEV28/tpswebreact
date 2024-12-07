@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Routes, Route, Link, Navigate } from "react-router-dom";
-import { AuthProvider } from "./contexts/Context"; // Importando AuthProvider
-import { AppProvider } from "./contexts/Context"; // Importando AppProvider para o contexto de idioma
+import { AuthProvider } from "./contexts/AuthContext"; // Importando AuthProvider
+import { AppProvider } from "./contexts/AuthContext"; // Importando AppProvider para o contexto de idioma
 import Home from "./views/Home";
 import SignIn from "./views/SignIn";
 import SignUp from "./views/SignUp";
@@ -21,6 +21,8 @@ import SnackBarComponent from "./SnackBarComponent";
 import TabComponent from "./TabComponent";
 import TextFieldComponent from "./TextFieldComponent";
 import TypographyComponent from "./TypographyComponent";
+import AddDataComponent from "./components/AddDataComponent"; // Importação do AddDataComponent
+import LogoutButton from "./components/LogoutButton"; // Importando o botão de logout
 
 // Rota privada
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
@@ -50,7 +52,6 @@ const App = () => {
   return (
     <AuthProvider>
       <AppProvider>
-        {" "}
         {/* Envolvendo com AppProvider para gerenciar o idioma */}
         <div>
           <nav>
@@ -73,8 +74,14 @@ const App = () => {
               <li style={{ margin: "0 10px" }}>
                 <Link to="/form">Form</Link>
               </li>
+              <li style={{ margin: "0 10px" }}>
+                <Link to="/add-data">Add Data</Link>
+              </li>
             </ul>
           </nav>
+
+          {/* Exibindo o botão de logout se o usuário estiver autenticado */}
+          {isAuthenticated && <LogoutButton />}
 
           {/* Componentes personalizados */}
           <CustomAvatar />
@@ -125,6 +132,14 @@ const App = () => {
               element={
                 <PrivateRoute>
                   <Form />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/add-data"
+              element={
+                <PrivateRoute>
+                  <AddDataComponent />
                 </PrivateRoute>
               }
             />

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useAuth } from "../contexts/Context";
+import { useAuth } from "../contexts/AuthContext";
 import { TextField, Button, Box, Typography } from "@mui/material";
 
 const SignIn: React.FC = () => {

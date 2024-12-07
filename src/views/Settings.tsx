@@ -12,15 +12,16 @@ import {
   InputLabel,
   FormControl,
 } from "@mui/material";
-import { useAppContext } from "../contexts/Context";
+import { useAppContext } from "../contexts/AppContext"; // Corrigido para o AppContext, não AuthContext
+import { SelectChangeEvent } from "@mui/material/Select"; // Importando SelectChangeEvent
 
 const Settings: React.FC = () => {
-  const { language, setLanguage } = useAppContext();
+  const { language, setLanguage } = useAppContext(); // Usando o AppContext para gerenciar o idioma
 
   const handleChangeLanguage = (
-    event: React.ChangeEvent<{ value: unknown }>
+    event: SelectChangeEvent<string> // Alterado para o tipo correto
   ) => {
-    setLanguage(event.target.value as string);
+    setLanguage(event.target.value); // Atualizando o idioma
   };
 
   const handleSave = () => {

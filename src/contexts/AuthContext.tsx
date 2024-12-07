@@ -1,11 +1,6 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-} from "react";
-import { useTranslation } from "react-i18next";
+// src/contexts/AuthContext.tsx
+import React, { createContext, useContext, useState, ReactNode } from "react";
+import { supabase } from "../services/supabaseClient";
 
 interface AuthContextType {
   user: string | null;
@@ -13,14 +8,11 @@ interface AuthContextType {
   logout: () => void;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-interface IContext {
-  setLanguage: (language: string) => void;
-  language: string;
+interface AuthProviderProps {
+  children: ReactNode;
 }
 
-const AppContext = createContext<IContext | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -30,47 +22,33 @@ export const useAuth = () => {
   return context;
 };
 
-export const useAppContext = () => {
-  const context = useContext(AppContext);
-  if (!context) {
-    throw new Error("useAppContext precisa ser usado dentro de um AppProvider");
-  }
-  return context;
-};
-
-export const AppProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
-  const { i18n } = useTranslation();
-  const [language, setLanguage] = useState<string>(() => {
-    const storedLanguage = localStorage.getItem("language");
-    return storedLanguage || "pt";
-  });
-
-  useEffect(() => {
-    i18n.changeLanguage(language);
-    localStorage.setItem("language", language);
-  }, [language, i18n]);
-
-  const handleSetLanguage = (newLanguage: string) => {
-    setLanguage(newLanguage);
-  };
-
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<string | null>(null);
 
   const login = (username: string) => {
     setUser(username);
   };
 
-  const logout = () => {
-    setUser(null);
+  const logout = async () => {
+    // Deslogar no Supabase
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      console.error("Erro ao fazer logout:", error);
+    } else {
+      // Limpar informações do localStorage
+      localStorage.removeItem("isAuthenticated");
+      localStorage.removeItem("user");
+
+      // Redirecionar para a página de login
+      window.location.href = "/signin"; // Redireciona para o SignIn
+      console.log("Logout realizado com sucesso.");
+    }
   };
 
   return (
     <AuthContext.Provider value={{ user, login, logout }}>
-      <AppContext.Provider value={{ setLanguage: handleSetLanguage, language }}>
-        {children}
-      </AppContext.Provider>
+      {children}
     </AuthContext.Provider>
   );
 };

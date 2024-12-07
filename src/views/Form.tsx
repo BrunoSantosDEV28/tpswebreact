@@ -1,56 +1,154 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { Box, Typography, TextField, Button, Paper } from "@mui/material";
+import { useParams, useNavigate } from "react-router-dom";
+import { supabase } from "../services/supabaseClient";
+import {
+  TextField,
+  Button,
+  Container,
+  AppBar,
+  Toolbar,
+  IconButton,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 
-const Form: React.FC = () => {
+const Form = () => {
   const { id } = useParams<{ id?: string }>();
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    coluna1: "",
+    coluna2: "",
+  });
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [openConfirm, setOpenConfirm] = useState(false);
 
   useEffect(() => {
-    if (id) {
-      setName("Nome do Item");
-      setDescription("Descrição do Item");
-    }
+    const fetchData = async () => {
+      if (id) {
+        const { data, error } = await supabase
+          .from("nome_da_tabela")
+          .select("*")
+          .eq("id", id)
+          .single();
+        if (error) {
+          console.error("Erro ao buscar dados:", error);
+        } else {
+          setFormData(data);
+        }
+      }
+    };
+    fetchData();
   }, [id]);
 
-  const handleSubmit = () => {
+  const handleSave = async () => {
     if (id) {
-      console.log(`Item ${id} editado:`, { name, description });
-      alert("Item editado com sucesso!");
+      const { error } = await supabase
+        .from("nome_da_tabela")
+        .update(formData)
+        .eq("id", id);
+      if (error) {
+        console.error("Erro ao atualizar dados:", error);
+      } else {
+        alert("Item atualizado com sucesso!");
+        navigate("/dashboard");
+      }
     } else {
-      console.log("Novo item criado:", { name, description });
-      alert("Novo item criado com sucesso!");
+      const { error } = await supabase
+        .from("nome_da_tabela")
+        .insert([formData]);
+      if (error) {
+        console.error("Erro ao inserir dados:", error);
+      } else {
+        alert("Item inserido com sucesso!");
+        navigate("/dashboard");
+      }
     }
   };
 
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    const { error } = await supabase
+      .from("nome_da_tabela")
+      .delete()
+      .eq("id", id);
+    setIsDeleting(false);
+    if (error) {
+      console.error("Erro ao deletar dados:", error);
+    } else {
+      alert("Item deletado com sucesso!");
+      setOpenConfirm(false);
+      navigate("/dashboard");
+    }
+  };
+
+  const handleOpenConfirm = () => setOpenConfirm(true);
+  const handleCloseConfirm = () => setOpenConfirm(false);
+
   return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant="h4" gutterBottom>
-        {id ? "Editar Item" : "Criar Novo Item"}
-      </Typography>
-      <Paper sx={{ p: 3 }}>
-        <TextField
-          label="Nome"
-          fullWidth
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          margin="normal"
-        />
-        <TextField
-          label="Descrição"
-          fullWidth
-          multiline
-          rows={4}
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          margin="normal"
-        />
-        <Button variant="contained" onClick={handleSubmit}>
-          {id ? "Salvar Alterações" : "Criar Item"}
-        </Button>
-      </Paper>
-    </Box>
+    <Container>
+      <AppBar position="static">
+        <Toolbar>
+          <h2>{id ? "Editar Item" : "Adicionar Item"}</h2>
+          {id && (
+            <IconButton
+              color="inherit"
+              onClick={handleOpenConfirm}
+              disabled={isDeleting}
+            >
+              <DeleteIcon />
+            </IconButton>
+          )}
+        </Toolbar>
+      </AppBar>
+
+      <TextField
+        label="Coluna 1"
+        value={formData.coluna1}
+        onChange={(e) => setFormData({ ...formData, coluna1: e.target.value })}
+        fullWidth
+        margin="normal"
+      />
+      <TextField
+        label="Coluna 2"
+        value={formData.coluna2}
+        onChange={(e) => setFormData({ ...formData, coluna2: e.target.value })}
+        fullWidth
+        margin="normal"
+      />
+
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleSave}
+        style={{ marginTop: "16px" }}
+      >
+        {id ? "Atualizar" : "Salvar"}
+      </Button>
+
+      {}
+      <Dialog open={openConfirm} onClose={handleCloseConfirm}>
+        <DialogTitle>Confirmar Exclusão</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Tem certeza de que deseja excluir este item? Essa ação não pode ser
+            desfeita.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseConfirm} color="primary">
+            Cancelar
+          </Button>
+          <Button onClick={handleDelete} color="secondary">
+            Excluir
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Container>
   );
 };
 
