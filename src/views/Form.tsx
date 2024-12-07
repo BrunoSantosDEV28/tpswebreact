@@ -1,44 +1,56 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { Box, Typography, TextField, Button, Paper } from "@mui/material";
 
-const Form = () => {
-  const [formData, setFormData] = useState({ name: "", email: "" });
+const Form: React.FC = () => {
+  const { id } = useParams<{ id?: string }>();
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
 
   useEffect(() => {
-    document.title = "Form";
-  }, []);
+    if (id) {
+      setName("Nome do Item");
+      setDescription("Descrição do Item");
+    }
+  }, [id]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Dados enviados:", formData);
+  const handleSubmit = () => {
+    if (id) {
+      console.log(`Item ${id} editado:`, { name, description });
+      alert("Item editado com sucesso!");
+    } else {
+      console.log("Novo item criado:", { name, description });
+      alert("Novo item criado com sucesso!");
+    }
   };
 
   return (
-    <div>
-      <h1>Form</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Name:</label>
-          <input
-            type="text"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            required
-          />
-        </div>
-        <div>
-          <label>Email:</label>
-          <input
-            type="email"
-            value={formData.email}
-            onChange={(e) =>
-              setFormData({ ...formData, email: e.target.value })
-            }
-            required
-          />
-        </div>
-        <button type="submit">Submit</button>
-      </form>
-    </div>
+    <Box sx={{ p: 3 }}>
+      <Typography variant="h4" gutterBottom>
+        {id ? "Editar Item" : "Criar Novo Item"}
+      </Typography>
+      <Paper sx={{ p: 3 }}>
+        <TextField
+          label="Nome"
+          fullWidth
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          margin="normal"
+        />
+        <TextField
+          label="Descrição"
+          fullWidth
+          multiline
+          rows={4}
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          margin="normal"
+        />
+        <Button variant="contained" onClick={handleSubmit}>
+          {id ? "Salvar Alterações" : "Criar Item"}
+        </Button>
+      </Paper>
+    </Box>
   );
 };
 

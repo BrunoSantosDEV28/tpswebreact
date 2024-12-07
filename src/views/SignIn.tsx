@@ -1,46 +1,68 @@
 import React, { useState, useEffect } from "react";
+import { useAuth } from "../contexts/Context";
+import { TextField, Button, Box, Typography } from "@mui/material";
 
-const SignIn = () => {
+const SignIn: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [message, setMessage] = useState<string>("");
+  const { login } = useAuth();
 
   useEffect(() => {
     document.title = "Sign In";
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    setMessage(`Usuário ${email} logado com sucesso!`);
+  const handleLogin = () => {
+    if (email && password) {
+      login(email);
+      setMessage(`Usuário ${email} logado com sucesso!`);
+    } else {
+      alert("Por favor, preencha todos os campos.");
+    }
   };
 
   return (
-    <div>
-      <h1>Sign In</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Email:</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Password:</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit">Login</button>
-      </form>
-      {message && <p>{message}</p>}
-    </div>
+    <Box sx={{ maxWidth: 400, margin: "auto", mt: 5 }}>
+      <Typography variant="h4" textAlign="center" mb={3}>
+        Login
+      </Typography>
+      <TextField
+        label="Email"
+        fullWidth
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        margin="normal"
+        required
+      />
+      <TextField
+        label="Senha"
+        fullWidth
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        margin="normal"
+        required
+      />
+      <Button
+        variant="contained"
+        fullWidth
+        onClick={handleLogin}
+        sx={{ mt: 2 }}
+      >
+        Entrar
+      </Button>
+      {message && (
+        <Typography
+          variant="body1"
+          textAlign="center"
+          mt={2}
+          color="success.main"
+        >
+          {message}
+        </Typography>
+      )}
+    </Box>
   );
 };
 

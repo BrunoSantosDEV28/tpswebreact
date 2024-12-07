@@ -1,22 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
+import { useAuth } from "../contexts/Context";
+import { Button, Typography, Box } from "@mui/material";
 
-const Home = () => {
-  const [message, setMessage] = useState<string>("Bem-vindo à Home!");
-
-  useEffect(() => {
-    document.title = "Página Inicial";
-  }, []);
-
-  const changeMessage = () => {
-    setMessage("O conteúdo da Home foi alterado!");
-  };
+const Home: React.FC = () => {
+  const { user, logout } = useAuth();
 
   return (
-    <div>
-      <h1>Home Page</h1>
-      <p>{message}</p>
-      <button onClick={changeMessage}>Alterar Mensagem</button>
-    </div>
+    <Box sx={{ textAlign: "center", mt: 5 }}>
+      <Typography variant="h4" mb={3}>
+        Bem-vindo, {user || "Visitante"}!
+      </Typography>
+      <Typography variant="body1" mb={2}>
+        Esta é a página inicial do aplicativo.
+      </Typography>
+      <Button variant="contained" onClick={logout}>
+        Sair
+      </Button>
+    </Box>
   );
 };
 
